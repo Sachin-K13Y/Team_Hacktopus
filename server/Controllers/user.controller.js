@@ -1,6 +1,6 @@
 import User from "../Models/user.model.js";
-// import Experience from '../Models/experience.model.js';
-// import Doubt from '../Models/doubt.model.js';
+ import Experience from '../Models/experience.model.js';
+ import Doubt from '../Models/doubt.model.js';
 import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import { authenticateUser } from '../Utils/verifyToken.js';
@@ -74,15 +74,15 @@ export const Logout = async (req, res) => {
   }
 }
 
-// export const Userprofile = async (req, res) => {
-//   try {
-//     const userId = req.user.id;
-//     const user = await User.findById(userId);
-//     const experiences = await Experience.find({ userId });
-//     const doubts = await Doubt.find({ askedBy: userId });
-//     res.json({ user, experiences, doubts });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Error fetching profile" });
-//   }
-// };
+export const Userprofile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    const experiences = await Experience.find({ userId });
+    const doubts = await Doubt.find({ askedBy: userId });
+    res.json({ user, experiences, doubts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching profile" });
+  }
+};
