@@ -5,6 +5,8 @@ import Experience from "./Pages/Experience";
 import Home from "./Pages/Home";
 import News from "./Pages/News";
 import SignUp from "./Pages/SignUp";
+import DoubtForum from "./Pages/DoubtForum"
+
 function App() {
   return (
     <>
@@ -14,6 +16,7 @@ function App() {
 
       <Route path="/experience" element={<Experience />} />
       <Route path="/" element={<Home />} />
+      <Route path="/doubts" element={<DoubtForum />} />
       <Route path="/news" element={<News/>} />
       <Route path="/sign-up" element={<SignUp />} />
 
