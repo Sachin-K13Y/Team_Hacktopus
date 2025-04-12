@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser";
 import cors from 'cors';
 import { getAllNews } from "./Controllers/news.controller.js";
 import newsRouter from "./Routes/news.routes.js";
+import experienceRoutes from "./Routes/experience.routes.js";
+
 dotenv.config();
 const app = express();
 app.use(cookieParser());
@@ -26,8 +28,11 @@ app.listen(process.env.PORT,()=>{
 connectDB();
 app.use(express.json())
 app.use('/user',userRoutes);
-// app.use('/experience',experienceRoutes);
+
 // app.use('/doubts',doubtRoutes);
 // app.use('/',rankingRouter);
-// app.use('/news',newsRouter);
 
+
+app.use('/news',newsRouter);
+app.use('/experience',experienceRoutes);
+connectDB();
