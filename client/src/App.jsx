@@ -3,6 +3,7 @@ import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import Experience from "./Pages/Experience";
 import Home from "./Pages/Home";
+import News from "./Pages/News";
 function App() {
   return (
     <>
@@ -12,6 +13,8 @@ function App() {
 
       <Route path="/experience" element={<Experience />} />
       <Route path="/" element={<Home />} />
+      <Route path="/news" element={<News/>} />
+
       </Routes>
       <Footer />
       </BrowserRouter>
