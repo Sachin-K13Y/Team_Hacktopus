@@ -7,6 +7,7 @@ import News from "./Pages/News";
 import SignUp from "./Pages/SignUp";
 import DoubtForum from "./Pages/DoubtForum"
 import Login from "./Pages/Login";
+import Profile from "./Pages/Profile";
 
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
       <Route path="/experience" element={<Experience />} />
       <Route path="/" element={<Home />} />
       <Route path="/doubts" element={<DoubtForum />} />
+      <Route path="/profile" element={<Profile />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/news" element={<News/>} />
       <Route path="/sign-up" element={<SignUp />} />
