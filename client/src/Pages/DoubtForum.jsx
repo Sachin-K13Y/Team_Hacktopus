@@ -8,25 +8,20 @@ import {
   FiSend,
   FiHeart,
 
-  FiBookmark,
-  FiShare2,
+
   FiClock,
-  FiFilter,
-  FiSearch,
+
   FiChevronDown,
-  FiUser,
-  FiAward
+
 } from "react-icons/fi";
 import { 
   FaUserCircle,
   FaRegStar,
-  FaTags,
-  FaStar,
+
   FaRegLightbulb,
-  FaFire,
+
   FaRegGem,
-  FaUserGraduate,
-  FaUserTie
+
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { Typewriter } from 'react-simple-typewriter';
@@ -52,14 +47,9 @@ function DoubtForum() {
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [viewMode, setViewMode] = useState("list"); // 'list' or 'grid'
+  const [viewMode, setViewMode] = useState("list");
 
-  // Available tags for suggestions
-  const availableTags = [
-    "Placement", "Interview", "DSA", "System Design", 
-    "Coding", "Technical", "HR", "Offer",
-    "Internship", "Full-time", "FAANG", "Startup"
-  ];
+
 
   useEffect(() => {
     fetchDoubts();
@@ -204,7 +194,7 @@ function DoubtForum() {
     totalAnswers: doubts.reduce((acc, doubt) => acc + doubt.answers.length, 0),
     totalUpvotes: doubts.reduce((acc, doubt) => acc + (doubt.upvote?.length || 0), 0),
     unansweredCount: doubts.filter(doubt => doubt.answers.length === 0).length,
-    popularTags: availableTags.slice(0, 5)
+
   };
 
   return (
@@ -381,66 +371,7 @@ function DoubtForum() {
                     />
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center">
-                      <FaTags className="mr-2 text-indigo-400" /> Tags (Optional)
-                    </label>
-                    <div className="flex items-center">
-                      <input
-                        type="text"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && addTag()}
-                        className="flex-1 p-3 rounded-l-xl bg-gray-900/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 focus:outline-none transition-all"
-                        placeholder="Add tags (e.g., DSA, Interview)"
-                      />
-                      <button
-                        type="button"
-                        onClick={addTag}
-                        className="px-4 py-3 bg-indigo-600 text-white rounded-r-xl hover:bg-indigo-700 transition-colors"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {formData.tags.map((tag, index) => (
-                        <span key={index} className="inline-flex items-center px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-sm">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-2 text-indigo-400 hover:text-indigo-300"
-                          >
-                            &times;
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {availableTags.slice(0, 5).map((tag, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          onClick={() => {
-                            if (!formData.tags.includes(tag)) {
-                              setFormData({
-                                ...formData,
-                                tags: [...formData.tags, tag]
-                              });
-                            }
-                          }}
-                          className={`px-3 py-1 rounded-full text-sm ${
-                            formData.tags.includes(tag)
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          }`}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
+              
                   <div className="flex justify-end pt-4 border-t border-gray-700">
                     <button
                       type="submit"
@@ -476,164 +407,11 @@ function DoubtForum() {
               </span>
             </h2>
             
-            <div className="w-full md:w-auto flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1 md:w-64">
-                <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search questions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
-                />
-              </div>
-              
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                  className="flex items-center px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
-                >
-                  <FiFilter className="mr-2" />
-                  Filters
-                </button>
-                
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
-                >
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="upvotes">Most Upvoted</option>
-                </select>
-                
-                <button
-                  onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
-                  className="px-3 py-2.5 bg-gray-900/50 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
-                >
-                  {viewMode === 'list' ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
+
           </div>
           
-          {/* Expanded Filters Panel */}
-          <AnimatePresence>
-            {isFiltersOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mb-8 overflow-hidden"
-              >
-                <div className="bg-gray-800/70 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                    <FiFilter className="mr-2 text-indigo-400" /> Filter Questions
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-300 mb-3">Status</h4>
-                      <div className="space-y-2">
-                        {['all', 'popular', 'unanswered'].map((option) => (
-                          <label key={option} className="flex items-center space-x-3 text-sm text-gray-300 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="filter"
-                              checked={filter === option}
-                              onChange={() => setFilter(option)}
-                              className="form-radio h-4 w-4 text-indigo-500 border-gray-600 focus:ring-indigo-500"
-                            />
-                            <span>
-                              {option === 'all' && 'All Questions'}
-                              {option === 'popular' && 'Popular (5+ upvotes)'}
-                              {option === 'unanswered' && 'Unanswered'}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-300 mb-3">Popular Tags</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {availableTags.map((tag, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => {
-                              if (!searchQuery.includes(tag)) {
-                                setSearchQuery(tag);
-                              }
-                            }}
-                            className={`px-3 py-1 rounded-full text-sm ${
-                              searchQuery.includes(tag)
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                            }`}
-                          >
-                            {tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {/* Active Filters Display */}
-          {(filter !== 'all' || searchQuery) && (
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <span className="text-sm text-gray-400">Active filters:</span>
-              
-              {filter !== 'all' && (
-                <span className="inline-flex items-center px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-sm">
-                  {filter === 'popular' ? 'Popular' : 'Unanswered'}
-                  <button
-                    onClick={() => setFilter('all')}
-                    className="ml-2 text-indigo-400 hover:text-indigo-300"
-                  >
-                    &times;
-                  </button>
-                </span>
-              )}
-              
-              {searchQuery && (
-                <span className="inline-flex items-center px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-sm">
-                  Search: "{searchQuery}"
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="ml-2 text-indigo-400 hover:text-indigo-300"
-                  >
-                    &times;
-                  </button>
-                </span>
-              )}
-              
-              {(filter !== 'all' || searchQuery) && (
-                <button
-                  onClick={() => {
-                    setFilter('all');
-                    setSearchQuery('');
-                  }}
-                  className="ml-2 text-sm text-indigo-400 hover:text-indigo-300 flex items-center"
-                >
-                  Clear all
-                </button>
-              )}
-            </div>
-          )}
+
+    
           
           {/* Loading State */}
           {loading ? (
