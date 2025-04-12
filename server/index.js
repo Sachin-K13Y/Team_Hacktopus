@@ -11,6 +11,7 @@ import cors from 'cors';
 import { getAllNews } from "./Controllers/news.controller.js";
 import newsRouter from "./Routes/news.routes.js";
 import experienceRoutes from "./Routes/experience.routes.js";
+import rankingRouter from "./Routes/ranking.routes.js";
 
 dotenv.config();
 const app = express();
@@ -28,7 +29,7 @@ app.listen(process.env.PORT,()=>{
 connectDB();
 app.use(express.json())
 app.use('/user',userRoutes);
-
+app.use('/',rankingRouter);
 // app.use('/doubts',doubtRoutes);
 // app.use('/',rankingRouter);
 
