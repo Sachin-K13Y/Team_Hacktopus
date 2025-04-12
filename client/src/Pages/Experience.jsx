@@ -13,8 +13,6 @@ import {
   FiTrendingUp,
   FiChevronDown,
   FiChevronUp,
-  FiSearch,
-  FiFilter,
   FiArrowUp,
   FiBookmark,
   FiShare2,
@@ -27,7 +25,7 @@ import {
   FaRegStar,
   FaStar,
   FaRegLightbulb,
-  FaTags,
+
   FaChartLine,
   FaLaptopCode,
   FaUserTie,
@@ -63,12 +61,7 @@ function Experience() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   // Available tags for suggestions
-  const availableTags = [
-    "LeetCode", "DSA", "System Design", "Coding Round", 
-    "Technical Interview", "HR Round", "Offer", "Rejection",
-    "Internship", "Full-time", "FAANG", "Startup", "Product Based",
-    "Service Based", "Remote", "Onsite"
-  ];
+
 
   useEffect(() => {
     fetchExperiences();
@@ -160,30 +153,9 @@ function Experience() {
     }
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, tagInput.trim()]
-      });
-      setTagInput("");
-    }
-  };
 
-  const removeTag = (tagToRemove) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove)
-    });
-  };
 
-  const toggleTagFilter = (tag) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag) 
-        : [...prev, tag]
-    );
-  };
+
 
   const filteredExperiences = experiences
     .filter(exp => {
@@ -191,22 +163,6 @@ function Experience() {
       if (filter === "anonymous") return exp.anonymous;
       if (filter === "recent") return new Date(exp.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       return true;
-    })
-    .filter(exp => {
-      if (!searchQuery) return true;
-      return (
-        exp.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exp.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (exp.name && exp.name.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    })
-    .filter(exp => {
-      if (selectedTags.length === 0) return true;
-      // Check if experience has any of the selected tags
-      return selectedTags.some(tag => 
-        exp.description.toLowerCase().includes(tag.toLowerCase()) ||
-        (exp.tags && exp.tags.some(expTag => expTag.toLowerCase() === tag.toLowerCase()))
-      );
     })
     .sort((a, b) => {
       if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
@@ -227,7 +183,7 @@ function Experience() {
         }))
         .sort((a, b) => b.count - a.count)[0]?.name 
       : "None",
-    popularTags: availableTags.slice(0, 5)
+    
   };
 
   // Extract all unique companies for filtering
@@ -472,65 +428,7 @@ function Experience() {
                     <p className="text-xs text-gray-500 mt-2">Supports Markdown formatting</p>
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center">
-                      <FaTags className="mr-2 text-[#FF6D52]" /> Tags (Optional)
-                    </label>
-                    <div className="flex items-center">
-                      <input
-                        type="text"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && addTag()}
-                        className="flex-1 p-3 rounded-l-xl bg-[#0f172a] border border-[#334155] focus:border-[#FF6D52] focus:ring-2 focus:ring-[#FF6D52]/30 focus:outline-none transition-all"
-                        placeholder="Add tags (e.g., LeetCode, System Design)"
-                      />
-                      <button
-                        type="button"
-                        onClick={addTag}
-                        className="px-4 py-3 bg-[#FF6D52] text-white rounded-r-xl hover:bg-[#FF8D52] transition-colors"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {formData.tags.map((tag, index) => (
-                        <span key={index} className="inline-flex items-center px-3 py-1 bg-[#FF6D52]/10 text-[#FF6D52] rounded-full text-sm">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-2 text-[#FF6D52] hover:text-[#FF8D52]"
-                          >
-                            &times;
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {availableTags.slice(0, 5).map((tag, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          onClick={() => {
-                            if (!formData.tags.includes(tag)) {
-                              setFormData({
-                                ...formData,
-                                tags: [...formData.tags, tag]
-                              });
-                            }
-                          }}
-                          className={`px-3 py-1 rounded-full text-sm ${
-                            formData.tags.includes(tag)
-                              ? 'bg-[#FF6D52] text-white'
-                              : 'bg-[#1e293b] text-gray-300 hover:bg-[#334155]'
-                          }`}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+             
                   
                   <div className="flex items-center justify-between pt-4 border-t border-[#334155]">
                     <label className="flex items-center space-x-3 text-sm text-gray-300 cursor-pointer">
@@ -848,29 +746,7 @@ function Experience() {
             </motion.div>
           )}
           
-          {/* Pagination Controls */}
-          {filteredExperiences.length > 0 && (
-            <div className="mt-12 flex justify-center">
-              <nav className="inline-flex items-center space-x-2">
-                <button className="px-4 py-2 bg-[#1e293b] border border-[#334155] rounded-lg text-gray-300 hover:bg-[#FF6D52]/10 hover:text-[#FF6D52] transition-colors">
-                  Previous
-                </button>
-                <button className="px-4 py-2 bg-[#FF6D52] text-white rounded-lg">
-                  1
-                </button>
-                <button className="px-4 py-2 bg-[#1e293b] border border-[#334155] rounded-lg text-gray-300 hover:bg-[#FF6D52]/10 hover:text-[#FF6D52] transition-colors">
-                  2
-                </button>
-                <button className="px-4 py-2 bg-[#1e293b] border border-[#334155] rounded-lg text-gray-300 hover:bg-[#FF6D52]/10 hover:text-[#FF6D52] transition-colors">
-                  3
-                </button>
-                <span className="px-2 text-gray-400">...</span>
-                <button className="px-4 py-2 bg-[#1e293b] border border-[#334155] rounded-lg text-gray-300 hover:bg-[#FF6D52]/10 hover:text-[#FF6D52] transition-colors">
-                  Next
-                </button>
-              </nav>
-            </div>
-          )}
+
         </div>
       </div>
       
