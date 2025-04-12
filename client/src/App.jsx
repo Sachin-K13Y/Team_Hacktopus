@@ -1,12 +1,17 @@
-import { useState } from 'react'
-
-
+import { Route, BrowserRouter, Routes } from "react-router-dom"
+import Navbar from "./Components/Navbar";
 function App() {
-  
-
   return (
-    <div className=' text-red-500 text-5xl'>Team hactopus</div>
-  )
+    <>
+      <BrowserRouter>
+      <Navbar/>
+      <Routes>
+
+
+      </Routes>
+      </BrowserRouter>
+    </>
+  );
 }
 
-export default App
+export default App;
