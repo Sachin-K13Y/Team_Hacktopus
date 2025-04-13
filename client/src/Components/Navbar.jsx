@@ -12,6 +12,7 @@ import {
   FaNewspaper
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import axiosInstance from '../services';
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,25 +23,39 @@ function Navbar() {
   const location = useLocation();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+  const [user,setUser] = useState();
 
-  // Close mobile menu when route changes
+  useEffect(()=>{
+    const fetchUser = async(req,res)=>{
+      const response = await axiosInstance.get('/user/profile');
+      
+      setAuthenticated(response.data.success);
+      setUser(response.data.user)
+    }
+
+    fetchUser()
+  },[])
   useEffect(() => {
     setMenuOpen(false);
   }, [location]);
 
-  // Navbar scroll effect
+
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10;
       if (isScrolled !== scrolled) {
         setScrolled(isScrolled);
       }
+
+      
     };
 
     document.addEventListener('scroll', handleScroll);
     return () => document.removeEventListener('scroll', handleScroll);
-  }, [scrolled]);
 
+    
+  }, [scrolled]);
+  console.log(user);
   // Click outside to close menu
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -126,31 +141,10 @@ function Navbar() {
 
         {/* Desktop Right Side */}
         <div className="hidden lg:flex items-center space-x-4">
-          {/* Search Button */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="p-2 text-white hover:text-[#FF6D52] transition-colors"
-          >
-            <FaSearch className="text-xl" />
-          </motion.button>
+        
 
-          {/* Notifications */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleNotifications}
-            className="p-2 relative"
-          >
-            {hasNotifications ? (
-              <FaBell className="text-xl text-[#FF6D52]" />
-            ) : (
-              <FaRegBell className="text-xl text-white hover:text-[#FF6D52]" />
-            )}
-            {hasNotifications && (
-              <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#082032]"></span>
-            )}
-          </motion.button>
+        
+        
 
           {/* Profile Dropdown */}
           <div className="relative">
@@ -160,9 +154,10 @@ function Navbar() {
               onClick={toggleProfile}
               className="flex items-center space-x-2 focus:outline-none"
             >
-              <div className="relative">
-                <FaUserCircle className="text-3xl text-white hover:text-[#FF6D52] transition-colors" />
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#082032]"></div>
+              <div className="relative flex flex-col">
+            
+                {user && <h3 className=' text-white'>Welcome <h2 className='text-[#FF6D52] text-xl'>{user.name}</h2></h3>}
+        
               </div>
               {profileOpen ? (
                 <FiChevronUp className="text-white" />
@@ -183,7 +178,7 @@ function Navbar() {
                   <div className="py-1">
                     <div className="px-4 py-3 border-b border-[#082032]">
                       <p className="text-sm font-medium text-white">Signed in as</p>
-                      <p className="text-sm text-[#FF6D52] truncate">student@example.com</p>
+                      <p className="text-sm text-[#FF6D52] truncate">{user.email}</p>
                     </div>
                     <NavLink
                       to="/profile"
@@ -191,12 +186,7 @@ function Navbar() {
                     >
                       Your Profile
                     </NavLink>
-                    <NavLink
-                      to="/settings"
-                      className="block px-4 py-3 text-white hover:bg-[#FF6D52]/10 transition-colors"
-                    >
-                      Settings
-                    </NavLink>
+              
                     {!authenticated ? (
                       <>
                         <NavLink
@@ -298,18 +288,8 @@ function Navbar() {
           )}
         </AnimatePresence>
 
-        {/* Floating Search Bar (Mobile) */}
-        {menuOpen && (
-          <div className="lg:hidden fixed bottom-1 right-30 z-50">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-12 h-12 rounded-full bg-gradient-to-r from-[#FF6D52] to-[#FF9E52] shadow-xl flex items-center justify-center text-white"
-            >
-              <FaSearch className="text-xl" />
-            </motion.button>
-          </div>
-        )}
+
+
       </div>
     </motion.nav>
   );
