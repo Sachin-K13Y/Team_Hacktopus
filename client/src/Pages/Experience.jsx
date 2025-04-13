@@ -595,27 +595,7 @@ function Experience() {
                                 </ReactMarkdown>
                               </div>
                               
-                              {(exp.description.toLowerCase().includes('leetcode') || 
-                                exp.description.toLowerCase().includes('dsa') || 
-                                exp.description.toLowerCase().includes('system design')) && (
-                                <div className="mt-6 flex flex-wrap gap-2">
-                                  {exp.description.toLowerCase().includes('leetcode') && (
-                                    <span className="px-3 py-1 bg-[#f59e0b]/10 text-[#f59e0b] rounded-full text-sm flex items-center">
-                                      <FaLaptopCode className="mr-1.5" /> LeetCode
-                                    </span>
-                                  )}
-                                  {exp.description.toLowerCase().includes('dsa') && (
-                                    <span className="px-3 py-1 bg-[#10b981]/10 text-[#10b981] rounded-full text-sm flex items-center">
-                                      <FaChartLine className="mr-1.5" /> Data Structures
-                                    </span>
-                                  )}
-                                  {exp.description.toLowerCase().includes('system design') && (
-                                    <span className="px-3 py-1 bg-[#3b82f6]/10 text-[#3b82f6] rounded-full text-sm flex items-center">
-                                      <FiBriefcase className="mr-1.5" /> System Design
-                                    </span>
-                                  )}
-                                </div>
-                              )}
+                          
                               
                               <div className="mt-8 flex justify-between items-center">
                                 <div className="flex items-center text-sm text-gray-400">
@@ -632,15 +612,9 @@ function Experience() {
                                   )}
                                 </div>
                                 <div className="flex items-center space-x-4">
-                                  <button className="flex items-center text-sm text-gray-400 hover:text-[#FF6D52] transition-colors">
-                                    <FiBookmark className="mr-1.5" /> Save
-                                  </button>
-                                  <button className="flex items-center text-sm text-gray-400 hover:text-[#FF6D52] transition-colors">
-                                    <FiShare2 className="mr-1.5" /> Share
-                                  </button>
-                                  <button className="flex items-center text-sm text-gray-400 hover:text-[#FF6D52] transition-colors">
-                                    <FiMessageSquare className="mr-1.5" /> Comment
-                                  </button>
+                                
+                                  
+                              
                                   <div className="text-xs text-gray-500 flex items-center">
                                     <FiClock className="mr-1.5" />
                                     {formatDate(exp.createdAt)}
