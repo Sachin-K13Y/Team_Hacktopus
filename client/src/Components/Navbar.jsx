@@ -76,6 +76,11 @@ function Navbar() {
     };
   }, [menuOpen]);
 
+  const handleLogout = async(req,res)=>{
+    const response = await axiosInstance.post('/user/logout');
+    console.log(response.data);
+  }
+
   const linkClasses = ({ isActive }) =>
     `px-3 py-2 rounded-lg transition-all duration-300 flex items-center ${
       isActive
@@ -177,15 +182,15 @@ function Navbar() {
                 >
                   <div className="py-1">
                     <div className="px-4 py-3 border-b border-[#082032]">
-                      <p className="text-sm font-medium text-white">Signed in as</p>
-                      <p className="text-sm text-[#FF6D52] truncate">{user.email}</p>
+                   { authenticated &&   <p className="text-sm font-medium text-white">Signed in as</p>}
+                     {user && <p className="text-sm text-[#FF6D52] truncate">{user.email}</p>}
                     </div>
-                    <NavLink
+                   { authenticated && <NavLink
                       to="/profile"
                       className="block px-4 py-3 text-white hover:bg-[#FF6D52]/10 transition-colors"
                     >
                       Your Profile
-                    </NavLink>
+                    </NavLink>}
               
                     {!authenticated ? (
                       <>
@@ -204,10 +209,10 @@ function Navbar() {
                       </>
                     ) : (
                       <NavLink
-                        to="/logout"
+                      
                         className="block px-4 py-3 text-white hover:bg-[#FF6D52]/10 transition-colors border-t border-[#082032]"
                       >
-                        Logout
+                        <button onClick={handleLogout}>LogOut</button>
                       </NavLink>
                     )}
                   </div>
@@ -275,10 +280,10 @@ function Navbar() {
                       </>
                     ) : (
                       <NavLink
-                        to="/logout"
+                    
                         className="block w-full px-4 py-2 text-center font-medium rounded-lg bg-transparent border border-red-500 text-red-500 hover:bg-red-500/10 transition-colors text-sm"
                       >
-                        Logout
+                        <button onClick={handleLogout}>Logout</button>
                       </NavLink>
                     )}
                   </div>
