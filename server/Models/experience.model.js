@@ -24,13 +24,14 @@ const experienceSchema = mongoose.Schema({
     },
     difficulty: {
         type: String,
-        enum: ['Easy', 'Medium', 'Hard'],
+        enum: ['easy', 'medium', 'hard'],
         required: true,
     },
     offerStatus: {
         type: String,
-        enum: ['Accepted', 'Rejected', 'Waiting'],
-        default: 'Waiting',
+        enum: ['accepted', 'rejected', 'waiting'],
+    
+        required:true
     },
     
     upvotes:[{

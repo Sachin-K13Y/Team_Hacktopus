@@ -2,7 +2,7 @@ import Experience from "../Models/experience.model.js";
 
 export const addExperience = async (req, res) => {
   try {
-    const { name, description, company, anonymous,difficulty,offerstatus } = req.body;
+    const { name, description, company, anonymous,difficulty,offerStatus } = req.body;
     const seniorId = req.user.id;
 
     const experience = new Experience({
@@ -12,7 +12,7 @@ export const addExperience = async (req, res) => {
       company,
       anonymous,
       difficulty,
-      offerstatus
+      offerStatus
     });
 
     await experience.save();
