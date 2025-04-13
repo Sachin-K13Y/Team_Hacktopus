@@ -401,13 +401,7 @@ function Home() {
                                     day: 'numeric'
                                   })}
                                 </span>
-                                <Link
-                                  to={`/experience/${exp._id}`}
-                                  className="inline-flex items-center text-sm text-[#FF6D52] hover:text-[#FF8D52] font-medium transition-colors duration-300 group"
-                                >
-                                  <span>Read more</span>
-                                  <FiArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                                </Link>
+                          
                               </div>
                             </div>
                             <div className="px-6 py-3 bg-[#0f2d46] border-t border-[#1e3a5a] flex items-center justify-between">
@@ -437,7 +431,7 @@ function Home() {
               {activeTab === 'rankings' && (
                 <div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(isLoading.rankings ? Array(4).fill({}) : ranking?.slice(0, 6)).map((user, index) => (
+                    {isLoading.rankings ? Array(4).fill({}) : ranking.map((user, index) => (
                       <motion.div
                         key={index}
                         whileHover={{ y: -5 }}
@@ -492,15 +486,7 @@ function Home() {
                       </motion.div>
                     ))}
                   </div>
-                  <div className="mt-12 text-center">
-                    <Link
-                      to="/ranking"
-                      className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-[#FF6D52] to-[#FF8D52] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#FF6D52]/40 transition-all duration-500 group"
-                    >
-                      <span>View Full Rankings</span>
-                      <FiArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-1" />
-                    </Link>
-                  </div>
+              
                 </div>
               )}
               
@@ -539,13 +525,7 @@ function Home() {
                                   })}
                                 </span>
                               </p>
-                              <Link
-                                to={`/doubt-forum/${discuss._id}`}
-                                className="text-sm text-[#FF6D52] hover:text-[#FF8D52] font-medium flex items-center transition-colors duration-300 group"
-                              >
-                                <span>Join discussion</span>
-                                <FiArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                              </Link>
+                      
                             </div>
                           </>
                         )}

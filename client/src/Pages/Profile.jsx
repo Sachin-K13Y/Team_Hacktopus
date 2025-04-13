@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../services";
-import { FiLogOut, FiUser, FiMail, FiCalendar, FiAward, FiMessageSquare, FiShare2, FiChevronRight } from "react-icons/fi";
+import { FiLogOut, FiUser, FiMail, FiThumbsUp, FiAward, FiMessageSquare, FiShare2, FiChevronRight } from "react-icons/fi";
 import { FaFire, FaChartLine, FaMedal, FaCode, FaUniversity } from "react-icons/fa";
 import { RiSwordFill } from "react-icons/ri";
 import { motion } from "framer-motion";
@@ -85,7 +85,7 @@ function Profile() {
   };
 
   return (
-    <div className="bg-[#082032] min-h-screen text-white">
+    <div className="bg-[#082032] mt-[60px] min-h-screen text-white">
       {/* Profile Header */}
       <div className="relative bg-gradient-to-br from-[#0f2d46] to-[#082032] pt-16 pb-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -427,12 +427,7 @@ function Profile() {
                               <span className="text-xs text-gray-500">
                                 Asked on {formatDate(doubt.createdAt)}
                               </span>
-                              <Link
-                                to={`/doubt-forum/${doubt._id}`}
-                                className="text-xs text-[#FF6D52] hover:underline"
-                              >
-                                View discussion
-                              </Link>
+                            
                             </div>
                           </div>
                         ))}
