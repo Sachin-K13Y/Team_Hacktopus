@@ -415,10 +415,7 @@ function Home() {
                                 <FiHeart className="text-gray-400" />
                                 <span className="text-sm text-gray-400">{exp.upvotes?.length || 0} upvotes</span>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <FiEye className="text-gray-400" />
-                                <span className="text-sm text-gray-400">{(index + 1) * 42} views</span>
-                              </div>
+                              
                             </div>
                           </>
                         )}
@@ -644,33 +641,13 @@ function Home() {
               </span>
               <span className="absolute inset-0 bg-gradient-to-r from-[#FF8D52] to-[#FF6D52] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
             </Link>
-            <Link
-              to="/about"
-              className="relative inline-flex items-center justify-center px-10 py-4 bg-transparent text-[#FF6D52] font-semibold rounded-xl border-2 border-[#FF6D52] hover:bg-[#FF6D52]/10 transition-all duration-500 group overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center">
-                Learn More
-                <FiExternalLink className="ml-3" />
-              </span>
-            </Link>
+          
           </div>
         </div>
       </section>
 
-      {/* Floating Action Button */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2 }}
-        className="fixed bottom-8 right-8 z-50"
-      >
-        <Link
-          to="/experience/new"
-          className="w-16 h-16 bg-gradient-to-r from-[#FF6D52] to-[#FF8D52] rounded-full shadow-xl flex items-center justify-center text-white hover:shadow-2xl hover:shadow-[#FF6D52]/40 transition-all duration-300 group"
-        >
-          <FiPlus className="text-2xl group-hover:rotate-90 transition-transform duration-300" />
-        </Link>
-      </motion.div>
+
+    
     </div>
   );
 }
