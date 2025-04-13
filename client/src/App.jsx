@@ -8,6 +8,7 @@ import SignUp from "./Pages/SignUp";
 import DoubtForum from "./Pages/DoubtForum"
 import Login from "./Pages/Login";
 import Profile from "./Pages/Profile";
+import Admin from "./Pages/Admin";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/news" element={<News/>} />
       <Route path="/sign-up" element={<SignUp />} />
+      <Route path="/admin" element={<Admin />} />
 
       </Routes>
       <Footer />
