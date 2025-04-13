@@ -151,12 +151,6 @@ function DoubtForum() {
     }
   };
 
-  const removeTag = (tagToRemove) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove)
-    });
-  };
 
   const formatDate = (dateString) => {
     const options = { 
@@ -188,14 +182,20 @@ function DoubtForum() {
       if (sortBy === "upvotes") return (b.upvote?.length || 0) - (a.upvote?.length || 0);
       return 0;
     });
-
-  const stats = {
-    totalDoubts: doubts.length,
-    totalAnswers: doubts.reduce((acc, doubt) => acc + doubt.answers.length, 0),
-    totalUpvotes: doubts.reduce((acc, doubt) => acc + (doubt.upvote?.length || 0), 0),
-    unansweredCount: doubts.filter(doubt => doubt.answers.length === 0).length,
-
-  };
+    const stats = {
+      totalDoubts: doubts?.length || 0,
+    
+      totalAnswers: doubts?.reduce((acc, doubt) => {
+        return acc + (doubt?.answers?.length || 0);
+      }, 0) || 0,
+    
+      totalUpvotes: doubts?.reduce((acc, doubt) => {
+        return acc + (doubt?.upvote?.length || 0);
+      }, 0) || 0,
+    
+      unansweredCount: doubts?.filter(doubt => (doubt?.answers?.length || 0) === 0)?.length || 0,
+    };
+    
 
   return (
     <section className="min-h-screen mt-[60px] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 text-gray-100">
@@ -431,13 +431,11 @@ function DoubtForum() {
               <div className="space-y-6">
                 {filteredDoubts.map((doubt) => (
                   <motion.div
-                    key={doubt._id}
+                    key={doubt && doubt._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className={`bg-gray-800/70 backdrop-blur-sm border border-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
-                      expandedDoubt === doubt._id ? 'shadow-indigo-500/10' : ''
-                    }`}
+                    className={`bg-gray-800/70 backdrop-blur-sm border border-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 `}
                   >
                     {/* Doubt Header */}
                     <div 
@@ -447,57 +445,49 @@ function DoubtForum() {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h3 className="text-xl font-semibold text-white group-hover:text-indigo-300 transition-colors">
-                            {doubt.question}
+                            {doubt && doubt.question}
                           </h3>
                           
                           <div className="flex items-center mt-3 space-x-4">
                             <div className="flex items-center text-sm text-gray-400">
                               <FaUserCircle className="mr-2 text-indigo-400" />
-                              <span>{doubt.askedBy.name}</span>
+                              <span>{doubt && doubt.askedBy.name}</span>
                             </div>
                             <div className="flex items-center text-sm text-gray-400">
                               <FiClock className="mr-1.5" />
-                              <span>{formatDate(doubt.createdAt)}</span>
+                              <span>{formatDate(doubt && doubt.createdAt)}</span>
                             </div>
                           </div>
                           
-                          {doubt.tags && doubt.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {doubt.tags.map((tag, index) => (
-                                <span key={index} className="px-2.5 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-xs">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          
                         </div>
                         
                         <div className="flex items-center space-x-3 ml-4">
                           <button
                             onClick={(e) => handleUpvote(doubt._id, e)}
-                            className={`flex flex-col items-center justify-center px-3 py-1 rounded-xl ${
+                            className={`flex flex-col items-center justify-center px-3 py-1 rounded-xl ${ doubt &&
                               doubt.upvote?.length > 0
                                 ? 'bg-indigo-500/10 text-indigo-400'
                                 : 'bg-gray-700 text-gray-400'
                             } hover:bg-indigo-500/20 transition-colors group/upvote`}
                           >
                             <FiChevronUp className="text-lg group-hover/upvote:animate-bounce" />
-                            <span className="text-xs font-medium mt-1">{doubt.upvote?.length || 0}</span>
+                            <span className="text-xs font-medium mt-1">{doubt && doubt.upvote?.length || 0}</span>
                           </button>
                           
-                          <button className="text-gray-400 hover:text-white transition-colors">
+                         { doubt && <button className="text-gray-400 hover:text-white transition-colors">
                             {expandedDoubt === doubt._id ? <FiChevronUp /> : <FiChevronDown />}
-                          </button>
+                          </button>}
                         </div>
                       </div>
                     </div>
 
                     {/* Answers Section */}
-                    <div className={`border-t border-gray-700 transition-all duration-300 ${
+                   { doubt && <div className={`border-t border-gray-700 transition-all duration-300 ${
                       expandedDoubt === doubt._id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
                     }`}>
                       {/* Answer Form */}
-                      {selectedDoubtId === doubt._id && (
+                      {doubt && selectedDoubtId === doubt._id && (
                         <div className="p-6 bg-gray-900/30">
                           <form onSubmit={(e) => handleAnswerSubmit(e, doubt._id)} className="space-y-4">
                             <div>
@@ -568,7 +558,7 @@ function DoubtForum() {
                           </div>
                         </div>
                       )}
-                    </div>
+                    </div>}
                   </motion.div>
                 ))}
               </div>
