@@ -31,7 +31,7 @@ function News() {
             default: return <FiAward className="text-[#FF6D52]" />;
         }
     }
-
+console.log(news)
     const filteredNews = activeTab === 'all' 
         ? news 
         : news.filter(item => item.type === activeTab);
@@ -74,7 +74,7 @@ function News() {
 
                 {/* Tabs */}
                 <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    {['all', 'FTE', 'Intern', 'PPO'].map((tab) => (
+                    {['all', 'FTE', 'Both', 'Internship'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
