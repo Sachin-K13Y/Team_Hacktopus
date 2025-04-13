@@ -55,7 +55,7 @@ function Navbar() {
 
     
   }, [scrolled]);
-  console.log(user);
+
   // Click outside to close menu
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -76,10 +76,11 @@ function Navbar() {
     };
   }, [menuOpen]);
 
-  const handleLogout = async(req,res)=>{
+  const handleLogout = async(req,res) => {
     const response = await axiosInstance.post('/user/logout');
     console.log(response.data);
-  }
+  };
+
 
   const linkClasses = ({ isActive }) =>
     `px-3 py-2 rounded-lg transition-all duration-300 flex items-center ${

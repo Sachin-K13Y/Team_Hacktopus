@@ -56,9 +56,9 @@ function Profile() {
     fetchProfile();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async(req,res) => {
+    const response = await axiosInstance.post('/user/logout');
+    console.log(response.data);
   };
 
   const formatDate = (dateString) => {
