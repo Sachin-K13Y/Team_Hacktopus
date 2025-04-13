@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../services";
+import { toast } from "react-toastify";
 
 
 function Login() {
@@ -25,11 +26,15 @@ function Login() {
       const response = await axiosInstance.post('/user/sign-in',formData);
       console.log(response.data);
       if(response.data.success){
+        toast.success("Login Successfull");
+      }
+      if(response.data.success){
         navigate('/');
       }
 
     } catch (error) {
         console.log(error);
+        toast.error("Invalid Credentials")
     }
   };
 

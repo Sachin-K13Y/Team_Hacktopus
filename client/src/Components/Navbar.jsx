@@ -259,9 +259,9 @@ function Navbar() {
                   <NavLink to="/news" className={mobileLinkClasses}>
                     <FaNewspaper className="mr-3" /> News
                   </NavLink>
-                  <NavLink to="/profile" className={mobileLinkClasses}>
+             { authenticated &&     <NavLink to="/profile" className={mobileLinkClasses}>
                     <FaUserCircle className="mr-3" /> Profile
-                  </NavLink>
+                  </NavLink>}
 
                   <div className="pt-3 mt-2 border-t border-[#2C394B]">
                     {!authenticated ? (

@@ -9,11 +9,12 @@ import DoubtForum from "./Pages/DoubtForum"
 import Login from "./Pages/Login";
 import Profile from "./Pages/Profile";
 import Admin from "./Pages/Admin";
-
+import {ToastContainer} from 'react-toastify'
 
 function App() {
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000}/>
       <BrowserRouter>
       <Navbar/>
       <Routes>

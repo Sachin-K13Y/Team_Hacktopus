@@ -5,6 +5,7 @@ import { FiLogOut, FiUser, FiMail, FiThumbsUp, FiAward, FiMessageSquare, FiShare
 import { FaFire, FaChartLine, FaMedal, FaCode, FaUniversity } from "react-icons/fa";
 import { RiSwordFill } from "react-icons/ri";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -59,6 +60,12 @@ function Profile() {
   const handleLogout = async(req,res) => {
     const response = await axiosInstance.post('/user/logout');
     console.log(response.data);
+    if(response.data.success){
+      toast.success("Logout Successfull");
+      if(response.data.success){
+        navigate('/');
+      }
+    }
   };
 
   const formatDate = (dateString) => {

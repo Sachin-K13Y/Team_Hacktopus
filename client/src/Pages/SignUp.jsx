@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../services";
+import { toast } from "react-toastify";
+
 
 function SignUp() {
   const [formData, setFormData] = useState({
     codeforces: "",
     email: "",
     password: "",
+    name,
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,14 +33,26 @@ function SignUp() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Frontend-only: Just simulate loading and navigation
-    setTimeout(() => {
+    try {
+      const response = await axiosInstance.post('/user/sign-up', formData);
+      console.log(response.data);
+      if(response.data.success){
+        toast.success("Registered Successfully")
+      }
+
+      if (response.data.success) {
+        navigate('/login');
+      }
+    } catch (error) {
+      console.log(error);
+      
+      setError(error.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
       setIsLoading(false);
-      navigate('/');
-    }, 1500);
+    }
   };
 
   return (
@@ -65,7 +81,7 @@ function SignUp() {
         <div className="bg-[#112240] bg-opacity-90 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-[#1e2a3a] transform transition-all hover:shadow-[0_20px_50px_rgba(255,109,82,0.3)]">
           {/* Decorative header */}
           <div className="bg-gradient-to-r from-[#FF6D52] to-[#FF8E7D] h-2"></div>
-
+          
           <div className="p-8">
             {/* Logo/Title with animation */}
             <div className="flex flex-col items-center mb-8 transform hover:scale-105 transition duration-300">
@@ -105,6 +121,23 @@ function SignUp() {
                 <p className="text-xs text-gray-500 mt-1">Your Codeforces username for verification</p>
               </div>
 
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-[#FF6D52]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Name
+                </label>
+                <input
+                  type="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full p-3 rounded-lg bg-[#0a192f] text-gray-200 border border-[#1e2a3a] focus:outline-none focus:ring-2 focus:ring-[#FF6D52] focus:border-transparent transition duration-200 placeholder-gray-500"
+                  placeholder="Name"
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center">
                   <svg className="w-4 h-4 mr-2 text-[#FF6D52]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -176,8 +209,8 @@ function SignUp() {
             <div className="mt-8 text-center">
               <p className="text-gray-400 text-sm">
                 Already have an account?{" "}
-                <Link
-                  to="/login"
+                <Link 
+                  to="/login" 
                   className="text-[#FF6D52] hover:text-[#FF9E7D] font-medium transition duration-200 relative group"
                 >
                   Login

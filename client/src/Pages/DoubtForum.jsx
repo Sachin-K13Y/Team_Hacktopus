@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Typewriter } from 'react-simple-typewriter';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { toast } from "react-toastify";
 
 function DoubtForum() {
   const [formData, setFormData] = useState({
@@ -77,8 +78,12 @@ function DoubtForum() {
     try {
       const response = await axiosInstance.post('/doubts/add-doubt', {
         question: formData.question,
-        tags: formData.tags
+
       });
+      console.log(response.data);
+      if(response.data.success){
+        toast.success("Question Asked Successfully");
+      }
       if (response.data?.doubt) {
         setDoubts([response.data.doubt, ...doubts]);
         setFormData({ question: "", tags: [] });
@@ -87,6 +92,7 @@ function DoubtForum() {
       }
     } catch (error) {
       console.error(error);
+      toast.error("Error in asking question ")
       setError("Failed to post doubt");
     }
   };
@@ -105,6 +111,10 @@ function DoubtForum() {
             doubt?._id === doubtId ? response.data.doubt : doubt
           )
         );
+        console.log(response.data);
+        if(response.data.success){
+          toast.success("Answer Added Successfully")
+        }
         setAnswerData({ answer: "" });
         setSelectedDoubtId(null);
         setError("");
@@ -121,6 +131,10 @@ function DoubtForum() {
     
     try {
       const response = await axiosInstance.post(`/doubts/add-upvote/${id}`);
+      console.log(response.data);
+      if(response.data.success){
+        toast.success("Upvote Successfull");
+      }
       if (response.data?.doubt) {
         setDoubts(
           doubts.map((doubt) => (doubt?._id === id ? response.data.doubt : doubt))
@@ -128,6 +142,7 @@ function DoubtForum() {
       }
     } catch (error) {
       console.error(error);
+      toast.error('Upvote Failed')
       setError("Failed to upvote doubt");
     }
   };
@@ -168,21 +183,7 @@ function DoubtForum() {
 
   const filteredDoubts = doubts
     .filter(doubt => doubt)
-    .filter(doubt => {
-      if (filter === "all") return true;
-      if (filter === "popular") return (doubt.upvote?.length || 0) > 5;
-      if (filter === "unanswered") return (doubt.answers?.length || 0) === 0;
-      return true;
-    })
-    .filter(doubt => {
-      if (!searchQuery) return true;
-      return (
-        doubt.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (doubt.tags && doubt.tags.some(tag => 
-          tag?.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      ))
-    })
+  
     .sort((a, b) => {
       if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
       if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);

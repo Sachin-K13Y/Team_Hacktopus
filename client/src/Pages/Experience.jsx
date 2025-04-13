@@ -37,6 +37,7 @@ import { Typewriter } from 'react-simple-typewriter';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axiosInstance from "../services";
+import { toast } from "react-toastify";
 
 function Experience() {
   const [formData, setFormData] = useState({
@@ -90,6 +91,10 @@ function Experience() {
     try {
       const response = await axiosInstance.post("/experience/add-experience", formData);
       setExperiences([response.data.experience, ...experiences]);
+      console.log(response.data);
+      if(response.data.success){
+        toast.success("Experience Added Successfully");
+      }
       setFormData({ 
         name: "", 
         company: "", 
@@ -102,6 +107,7 @@ function Experience() {
       setIsFormVisible(false);
     } catch (error) {
       console.error(error);
+      toast.error("Experience Add failed");
     }
   };
 
@@ -109,11 +115,16 @@ function Experience() {
     e.stopPropagation();
     try {
       const response = await axiosInstance.post(`/experience/add-upvote/${id}`);
+      console.log(response.data);
+      if(response.data.success){
+        toast.success("Upvote Successful!")
+      }
       setExperiences(
         experiences.map((exp) => (exp._id === id ? response.data.experience : exp))
       );
     } catch (error) {
       console.error(error);
+      toast.error("Upvote Failed !!")
     }
   };
 
