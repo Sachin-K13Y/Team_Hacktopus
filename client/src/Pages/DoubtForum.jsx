@@ -7,21 +7,15 @@ import {
   FiX, 
   FiSend,
   FiHeart,
-
-
   FiClock,
-
   FiChevronDown,
-
+  FiArrowUp
 } from "react-icons/fi";
 import { 
   FaUserCircle,
   FaRegStar,
-
   FaRegLightbulb,
-
   FaRegGem,
-
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { Typewriter } from 'react-simple-typewriter';
@@ -49,8 +43,6 @@ function DoubtForum() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list");
 
-
-
   useEffect(() => {
     fetchDoubts();
   }, []);
@@ -59,7 +51,7 @@ function DoubtForum() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/doubts/find-all-Doubts");
-      setDoubts(response.data.doubts);
+      setDoubts(response.data?.doubts || []);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -87,10 +79,12 @@ function DoubtForum() {
         question: formData.question,
         tags: formData.tags
       });
-      setDoubts([response.data.doubt, ...doubts]);
-      setFormData({ question: "", tags: [] });
-      setIsFormVisible(false);
-      setError("");
+      if (response.data?.doubt) {
+        setDoubts([response.data.doubt, ...doubts]);
+        setFormData({ question: "", tags: [] });
+        setIsFormVisible(false);
+        setError("");
+      }
     } catch (error) {
       console.error(error);
       setError("Failed to post doubt");
@@ -99,18 +93,22 @@ function DoubtForum() {
 
   const handleAnswerSubmit = async (e, doubtId) => {
     e.preventDefault();
+    if (!doubtId) return;
+    
     try {
       const response = await axiosInstance.post(`/doubts/add-answer/${doubtId}`, {
         answeredText: answerData.answer,
       });
-      setDoubts(
-        doubts.map((doubt) =>
-          doubt._id === doubtId ? response.data.doubt : doubt
-        )
-      );
-      setAnswerData({ answer: "" });
-      setSelectedDoubtId(null);
-      setError("");
+      if (response.data?.doubt) {
+        setDoubts(
+          doubts.map((doubt) =>
+            doubt?._id === doubtId ? response.data.doubt : doubt
+          )
+        );
+        setAnswerData({ answer: "" });
+        setSelectedDoubtId(null);
+        setError("");
+      }
     } catch (error) {
       console.error(error);
       setError("Failed to post answer");
@@ -119,11 +117,15 @@ function DoubtForum() {
 
   const handleUpvote = async (id, e) => {
     e.stopPropagation();
+    if (!id) return;
+    
     try {
       const response = await axiosInstance.post(`/doubts/add-upvote/${id}`);
-      setDoubts(
-        doubts.map((doubt) => (doubt._id === id ? response.data.doubt : doubt))
-      );
+      if (response.data?.doubt) {
+        setDoubts(
+          doubts.map((doubt) => (doubt?._id === id ? response.data.doubt : doubt))
+        );
+      }
     } catch (error) {
       console.error(error);
       setError("Failed to upvote doubt");
@@ -136,6 +138,7 @@ function DoubtForum() {
   };
 
   const toggleAnswerWindow = (doubtId) => {
+    if (!doubtId) return;
     setSelectedDoubtId(selectedDoubtId === doubtId ? null : doubtId);
     setAnswerData({ answer: "" });
     setExpandedDoubt(expandedDoubt === doubtId ? null : doubtId);
@@ -151,8 +154,8 @@ function DoubtForum() {
     }
   };
 
-
   const formatDate = (dateString) => {
+    if (!dateString) return "";
     const options = { 
       year: 'numeric', 
       month: 'short', 
@@ -164,42 +167,38 @@ function DoubtForum() {
   };
 
   const filteredDoubts = doubts
+    .filter(doubt => doubt)
     .filter(doubt => {
       if (filter === "all") return true;
-      if (filter === "popular") return doubt.upvote?.length > 5;
-      if (filter === "unanswered") return doubt.answers.length === 0;
+      if (filter === "popular") return (doubt.upvote?.length || 0) > 5;
+      if (filter === "unanswered") return (doubt.answers?.length || 0) === 0;
       return true;
     })
     .filter(doubt => {
       if (!searchQuery) return true;
       return (
-        doubt.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (doubt.tags && doubt.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())))
-    )})
+        doubt.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (doubt.tags && doubt.tags.some(tag => 
+          tag?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      ))
+    })
     .sort((a, b) => {
       if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
       if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
       if (sortBy === "upvotes") return (b.upvote?.length || 0) - (a.upvote?.length || 0);
       return 0;
     });
-    const stats = {
-      totalDoubts: doubts?.length || 0,
-    
-      totalAnswers: doubts?.reduce((acc, doubt) => {
-        return acc + (doubt?.answers?.length || 0);
-      }, 0) || 0,
-    
-      totalUpvotes: doubts?.reduce((acc, doubt) => {
-        return acc + (doubt?.upvote?.length || 0);
-      }, 0) || 0,
-    
-      unansweredCount: doubts?.filter(doubt => (doubt?.answers?.length || 0) === 0)?.length || 0,
-    };
-    
+
+  const stats = {
+    totalDoubts: doubts.filter(doubt => doubt).length,
+    totalAnswers: doubts.reduce((acc, doubt) => acc + (doubt?.answers?.length || 0), 0),
+    totalUpvotes: doubts.reduce((acc, doubt) => acc + (doubt?.upvote?.length || 0), 0),
+    unansweredCount: doubts.filter(doubt => (doubt?.answers?.length || 0) === 0).length,
+  };
 
   return (
     <section className="min-h-screen mt-[60px] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 text-gray-100">
-      {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -220,7 +219,6 @@ function DoubtForum() {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Premium Header with Animation */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -247,7 +245,6 @@ function DoubtForum() {
             Ask questions, share knowledge, and collaborate with peers to solve placement-related doubts
           </p>
           
-          {/* Stats Cards with Enhanced Design */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
             <motion.div 
               whileHover={{ y: -8, scale: 1.03 }}
@@ -311,7 +308,6 @@ function DoubtForum() {
           </div>
         </motion.div>
 
-        {/* Ask Question Button with Enhanced Animation */}
         <div className="max-w-3xl mx-auto mb-12 flex justify-center">
           <motion.button
             onClick={toggleFormVisibility}
@@ -335,7 +331,6 @@ function DoubtForum() {
           </motion.button>
         </div>
 
-        {/* Question Form with Enhanced Design */}
         <AnimatePresence>
           {isFormVisible && (
             <motion.div
@@ -371,7 +366,48 @@ function DoubtForum() {
                     />
                   </div>
                   
-              
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Tags (Optional)
+                    </label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {formData.tags.map((tag, index) => (
+                        <span key={index} className="flex items-center px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-sm">
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                tags: formData.tags.filter((_, i) => i !== index)
+                              });
+                            }}
+                            className="ml-2 text-indigo-300 hover:text-white"
+                          >
+                            <FiX size={14} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex">
+                      <input
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        className="flex-1 p-3 rounded-l-xl bg-gray-900/50 border border-gray-700 focus:border-indigo-500 focus:outline-none"
+                        placeholder="Add tags (e.g. javascript, react)"
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      />
+                      <button
+                        type="button"
+                        onClick={addTag}
+                        className="px-4 bg-indigo-600 text-white rounded-r-xl hover:bg-indigo-700 transition-colors"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                  
                   <div className="flex justify-end pt-4 border-t border-gray-700">
                     <button
                       type="submit"
@@ -387,7 +423,6 @@ function DoubtForum() {
           )}
         </AnimatePresence>
 
-        {/* Error Message */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -398,7 +433,6 @@ function DoubtForum() {
           </motion.div>
         )}
 
-        {/* Doubts Section with Enhanced Filtering */}
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
             <h2 className="text-2xl md:text-3xl font-semibold">
@@ -407,13 +441,109 @@ function DoubtForum() {
               </span>
             </h2>
             
-
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl focus:border-indigo-500 focus:outline-none"
+                  placeholder="Search questions..."
+                />
+                <FiMessageSquare className="absolute left-3 top-3 text-gray-400" />
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                  className="flex items-center px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl hover:bg-gray-700 transition-colors"
+                >
+                  <span>Filters</span>
+                  {isFiltersOpen ? <FiChevronUp className="ml-2" /> : <FiChevronDown className="ml-2" />}
+                </button>
+                
+                <div className="flex">
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`px-3 py-2 rounded-l-xl border border-gray-700 ${viewMode === "list" ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                  >
+                    List
+                  </button>
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`px-3 py-2 rounded-r-xl border border-gray-700 ${viewMode === "grid" ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                  >
+                    Grid
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           
-
-    
+          <AnimatePresence>
+            {isFiltersOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mb-6 overflow-hidden"
+              >
+                <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-300 mb-3">Filter by</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => setFilter("all")}
+                          className={`px-4 py-2 rounded-xl text-sm ${filter === "all" ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        >
+                          All Questions
+                        </button>
+                        <button
+                          onClick={() => setFilter("popular")}
+                          className={`px-4 py-2 rounded-xl text-sm ${filter === "popular" ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        >
+                          Popular
+                        </button>
+                        <button
+                          onClick={() => setFilter("unanswered")}
+                          className={`px-4 py-2 rounded-xl text-sm ${filter === "unanswered" ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        >
+                          Unanswered
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-300 mb-3">Sort by</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => setSortBy("newest")}
+                          className={`px-4 py-2 rounded-xl text-sm ${sortBy === "newest" ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        >
+                          Newest
+                        </button>
+                        <button
+                          onClick={() => setSortBy("oldest")}
+                          className={`px-4 py-2 rounded-xl text-sm ${sortBy === "oldest" ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        >
+                          Oldest
+                        </button>
+                        <button
+                          onClick={() => setSortBy("upvotes")}
+                          className={`px-4 py-2 rounded-xl text-sm ${sortBy === "upvotes" ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        >
+                          Most Upvotes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
-          {/* Loading State */}
           {loading ? (
             <div className="text-center py-20">
               <motion.div
@@ -431,65 +561,75 @@ function DoubtForum() {
               <div className="space-y-6">
                 {filteredDoubts.map((doubt) => (
                   <motion.div
-                    key={doubt && doubt._id}
+                    key={doubt?._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className={`bg-gray-800/70 backdrop-blur-sm border border-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 `}
+                    className={`bg-gray-800/70 backdrop-blur-sm border border-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300`}
                   >
-                    {/* Doubt Header */}
                     <div 
                       className="p-6 cursor-pointer"
-                      onClick={() => toggleAnswerWindow(doubt._id)}
+                      onClick={() => toggleAnswerWindow(doubt?._id)}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-white group-hover:text-indigo-300 transition-colors">
-                            {doubt && doubt.question}
+                          <h3 className="text-xl font-semibold text-white">
+                            {doubt?.question}
                           </h3>
+                          
+                          {doubt?.tags && doubt.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {doubt.tags.slice(0, 3).map((tag, index) => (
+                                <span key={index} className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full text-xs">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                           
                           <div className="flex items-center mt-3 space-x-4">
                             <div className="flex items-center text-sm text-gray-400">
                               <FaUserCircle className="mr-2 text-indigo-400" />
-                              <span>{doubt && doubt.askedBy.name}</span>
+                              <span>{doubt?.askedBy?.name || 'Anonymous'}</span>
                             </div>
                             <div className="flex items-center text-sm text-gray-400">
                               <FiClock className="mr-1.5" />
-                              <span>{formatDate(doubt && doubt.createdAt)}</span>
+                              <span>{formatDate(doubt?.createdAt)}</span>
                             </div>
                           </div>
-                          
-                          
                         </div>
                         
                         <div className="flex items-center space-x-3 ml-4">
                           <button
-                            onClick={(e) => handleUpvote(doubt._id, e)}
-                            className={`flex flex-col items-center justify-center px-3 py-1 rounded-xl ${ doubt &&
-                              doubt.upvote?.length > 0
-                                ? 'bg-indigo-500/10 text-indigo-400'
-                                : 'bg-gray-700 text-gray-400'
+                            onClick={(e) => handleUpvote(doubt?._id, e)}
+                            className={`flex flex-col items-center justify-center px-3 py-1 rounded-xl ${doubt?.upvote?.length > 0
+                              ? 'bg-indigo-500/10 text-indigo-400'
+                              : 'bg-gray-700 text-gray-400'
                             } hover:bg-indigo-500/20 transition-colors group/upvote`}
                           >
                             <FiChevronUp className="text-lg group-hover/upvote:animate-bounce" />
-                            <span className="text-xs font-medium mt-1">{doubt && doubt.upvote?.length || 0}</span>
+                            <span className="text-xs font-medium mt-1">{doubt?.upvote?.length || 0}</span>
                           </button>
                           
-                         { doubt && <button className="text-gray-400 hover:text-white transition-colors">
-                            {expandedDoubt === doubt._id ? <FiChevronUp /> : <FiChevronDown />}
-                          </button>}
+                          <button 
+                            className="text-gray-400 hover:text-white transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleAnswerWindow(doubt?._id);
+                            }}
+                          >
+                            {expandedDoubt === doubt?._id ? <FiChevronUp /> : <FiChevronDown />}
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    {/* Answers Section */}
-                   { doubt && <div className={`border-t border-gray-700 transition-all duration-300 ${
-                      expandedDoubt === doubt._id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+                    <div className={`border-t border-gray-700 transition-all duration-300 ${
+                      expandedDoubt === doubt?._id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
                     }`}>
-                      {/* Answer Form */}
-                      {doubt && selectedDoubtId === doubt._id && (
+                      {selectedDoubtId === doubt?._id && (
                         <div className="p-6 bg-gray-900/30">
-                          <form onSubmit={(e) => handleAnswerSubmit(e, doubt._id)} className="space-y-4">
+                          <form onSubmit={(e) => handleAnswerSubmit(e, doubt?._id)} className="space-y-4">
                             <div>
                               <label className="block text-sm font-medium text-gray-300 mb-2">
                                 Your Answer
@@ -507,7 +647,7 @@ function DoubtForum() {
                             <div className="flex justify-end space-x-3">
                               <button
                                 type="button"
-                                onClick={() => toggleAnswerWindow(doubt._id)}
+                                onClick={() => toggleAnswerWindow(doubt?._id)}
                                 className="px-4 py-2.5 bg-gray-700 text-gray-300 rounded-xl hover:bg-gray-600 transition-colors"
                               >
                                 Cancel
@@ -524,8 +664,7 @@ function DoubtForum() {
                         </div>
                       )}
 
-                      {/* Existing Answers */}
-                      {doubt.answers.length > 0 && (
+                      {doubt?.answers?.length > 0 && (
                         <div className="p-6 pt-0">
                           <h4 className="text-sm font-medium text-gray-400 mb-4 flex items-center">
                             <FiMessageSquare className="mr-2" /> Answers ({doubt.answers.length})
@@ -541,16 +680,16 @@ function DoubtForum() {
                               >
                                 <div className="prose prose-invert max-w-none">
                                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {answer.answeredText}
+                                    {answer?.answeredText || ''}
                                   </ReactMarkdown>
                                 </div>
                                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-700">
                                   <div className="flex items-center text-sm text-gray-400">
                                     <FaUserCircle className="mr-2 text-indigo-400" />
-                                    <span>{answer.answeredBy.name}</span>
+                                    <span>{answer?.answeredBy?.name || 'Anonymous'}</span>
                                   </div>
                                   <div className="text-xs text-gray-500">
-                                    {formatDate(answer.answeredAt)}
+                                    {formatDate(answer?.answeredAt)}
                                   </div>
                                 </div>
                               </motion.div>
@@ -558,7 +697,7 @@ function DoubtForum() {
                           </div>
                         </div>
                       )}
-                    </div>}
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -566,7 +705,7 @@ function DoubtForum() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredDoubts.map((doubt) => (
                   <motion.div
-                    key={doubt._id}
+                    key={doubt?._id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3 }}
@@ -574,24 +713,24 @@ function DoubtForum() {
                   >
                     <div className="p-6">
                       <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2">
-                        {doubt.question}
+                        {doubt?.question}
                       </h3>
                       
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center text-sm text-gray-400">
                           <FaUserCircle className="mr-2 text-indigo-400" />
-                          <span>{doubt.askedBy.name}</span>
+                          <span>{doubt?.askedBy?.name || 'Anonymous'}</span>
                         </div>
                         <button
-                          onClick={(e) => handleUpvote(doubt._id, e)}
+                          onClick={(e) => handleUpvote(doubt?._id, e)}
                           className="flex items-center space-x-1 px-2.5 py-1 bg-gray-700 rounded-lg hover:bg-indigo-500/10 transition-colors"
                         >
-                          <FiChevronUp className={`text-sm ${doubt.upvote?.length > 0 ? 'text-indigo-400' : 'text-gray-400'}`} />
-                          <span className="text-xs">{doubt.upvote?.length || 0}</span>
+                          <FiChevronUp className={`text-sm ${doubt?.upvote?.length > 0 ? 'text-indigo-400' : 'text-gray-400'}`} />
+                          <span className="text-xs">{doubt?.upvote?.length || 0}</span>
                         </button>
                       </div>
                       
-                      {doubt.tags && doubt.tags.length > 0 && (
+                      {doubt?.tags && doubt.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {doubt.tags.slice(0, 3).map((tag, index) => (
                             <span key={index} className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full text-xs">
@@ -602,11 +741,8 @@ function DoubtForum() {
                       )}
                       
                       <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{doubt.answers.length} answers</span>
-                        <span>{new Date(doubt.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric'
-                        })}</span>
+                        <span>{doubt?.answers?.length || 0} answers</span>
+                        <span>{formatDate(doubt?.createdAt)}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -642,7 +778,6 @@ function DoubtForum() {
             </motion.div>
           )}
           
-          {/* Pagination Controls */}
           {filteredDoubts.length > 0 && (
             <div className="mt-12 flex justify-center">
               <nav className="inline-flex items-center space-x-2">
@@ -668,7 +803,6 @@ function DoubtForum() {
         </div>
       </div>
       
-      {/* Floating Action Buttons */}
       <div className="fixed bottom-8 right-8 z-50 space-y-3">
         <motion.button
           whileHover={{ scale: 1.1 }}
