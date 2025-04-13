@@ -43,3 +43,6 @@ We’ve made good progress by now (April 12, 2025):
    - Install required dependencies
    - Then go to server run the server npm run dev
    - Then go to client run the client npm run dev
+
+## Deployment
+https://team-hacktopus.vercel.app/
