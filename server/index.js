@@ -15,8 +15,8 @@ dotenv.config();
 const app = express();
 app.use(cookieParser());
 app.use(cors({
-    origin:'https://team-hacktopus-cl11.vercel.app',
-    credentials:true
+    origin: true,
+    credentials: true
 }));
 app.listen(process.env.PORT,()=>{
     console.log("Server is Running at Port 3000");
