@@ -86,3 +86,7 @@ export const Userprofile = async (req, res) => {
     res.status(500).json({ message: "Error fetching profile" });
   }
 };
+
+export const awake = async(req,res)=>{
+    return res.status(200).json({message:"Hello response from Margdarshan"});
+}
