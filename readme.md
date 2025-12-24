@@ -44,5 +44,96 @@ We’ve made good progress by now (April 12, 2025):
    - Then go to server run the server npm run dev
    - Then go to client run the client npm run dev
 
+
 ## Deployment
-https://team-hacktopus.vercel.app/
+Live: https://team-hacktopus.vercel.app/
+
+---
+
+## API Documentation
+
+### User APIs
+| Method | Endpoint         | Description                  | Auth Required | Body/Params |
+|--------|------------------|------------------------------|---------------|-------------|
+| POST   | /api/user/sign-up   | Register a new user           | No            | name, email, password, codeforces |
+| POST   | /api/user/sign-in   | Login user                    | No            | email, password |
+| POST   | /api/user/logout    | Logout user                   | Yes (cookie)  | -           |
+| GET    | /api/user/profile   | Get user profile              | Yes           | -           |
+| GET    | /api/user/awake     | Health check                  | No            | -           |
+| POST   | /api/user/test      | Test token validity           | Yes           | -           |
+
+### Experience APIs
+| Method | Endpoint                   | Description                  | Auth Required | Body/Params |
+|--------|----------------------------|------------------------------|---------------|-------------|
+| POST   | /api/experience/add-experience | Add a new experience         | Yes           | name, description, company, anonymous, difficulty, offerStatus |
+| GET    | /api/experience/delete-experience/:id | Delete experience by ID     | Yes           | :id        |
+| POST   | /api/experience/add-upvote/:id | Upvote an experience         | Yes           | :id        |
+| GET    | /api/experience/find-all-experiences | Get all experiences         | No            | -          |
+
+### Doubt Forum APIs
+| Method | Endpoint                   | Description                  | Auth Required | Body/Params |
+|--------|----------------------------|------------------------------|---------------|-------------|
+| POST   | /api/doubt/add-doubt       | Add a new doubt              | Yes           | question    |
+| GET    | /api/doubt/delete-doubt/:id| Delete doubt by ID           | No            | :id         |
+| POST   | /api/doubt/add-answer/:id  | Add answer to doubt          | Yes           | :id, answeredText |
+| GET    | /api/doubt/find-all-Doubts | Get all doubts               | No            | -           |
+| POST   | /api/doubt/add-upvote/:id  | Upvote a doubt               | Yes           | :id         |
+
+### News APIs
+| Method | Endpoint         | Description                  | Auth Required | Body/Params |
+|--------|------------------|------------------------------|---------------|-------------|
+| POST   | /api/news/add-news   | Add a news/notice               | No            | company, title, deadline, CGPA, description, type, link, batch |
+| GET    | /api/news/get-all    | Get all news/notices            | No            | -           |
+
+### Ranking APIs
+| Method | Endpoint         | Description                  | Auth Required | Body/Params |
+|--------|------------------|------------------------------|---------------|-------------|
+| GET    | /api/ranking/ranking | Get Codeforces stats for all users | No        | -           |
+
+---
+
+## Usage
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Sachin-K13Y/Team_Hacktopus
+```
+
+### 2. Install dependencies
+```bash
+cd Team_Hacktopus/server
+npm install
+cd ../client
+npm install
+```
+
+### 3. Set up environment variables
+Create a `.env` file in the `server/` directory with the following:
+```
+MONGO_URL=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+### 4. Run the project
+Start the backend:
+```bash
+cd server
+npm run dev
+```
+Start the frontend:
+```bash
+cd client
+npm run dev
+```
+
+---
+
+## Tech Stack
+- Frontend: React, Vite
+- Backend: Node.js, Express.js, MongoDB
+
+
+
+---
+
+
